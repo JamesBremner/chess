@@ -8,6 +8,8 @@ e4.fen
     
     rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1
     
-![image](https://user-images.githubusercontent.com/2046227/190873855-f7a021c5-c3e9-42e7-aa21-7d691ac272dc.png)
+![image](https://user-images.githubusercontent.com/2046227/190929390-1ddabc13-b338-49db-a98b-713bf094331c.png)
+
+On the right, the occupied squares are shown, with the piece on the square and a measure of strength equal to the product of the value of the piece and the number of moves available to it.
 
 
