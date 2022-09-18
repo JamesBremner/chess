@@ -7,59 +7,8 @@
 #include <algorithm>
 #include <wex.h>
 #include "cStarterGUI.h"
-#include "autocell.h"
 
-class cChessSquare : public cell::cCell
-{
-public:
-    void text(char c)
-    {
-        myText = c;
-    }
-    char text()
-    {
-        return myText;
-    }
-
-private:
-    char myText;
-};
-
-class cChess
-{
-public:
-    cChess();
-
-    /// @brief read FEN file containing chess board position
-    /// @param fname
-    ///
-    /// https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
-
-    void readFEN(const std::string &fname);
-
-    /// @brief human readable rank position
-    /// @param r rank
-    /// @return human readable string
-
-    std::string rank(int r);
-
-    /// @brief describe a square in the position
-    /// @param rank 
-    /// @param file 
-    /// @return human readable description
-
-    std::string describe(int rank, int file);
-
-private:
-    cell::cAutomaton<cChessSquare> myBoard;
-
-    const char algrank[8]{'8', '7', '6', '5', '4', '3', '2', '1'};
-    const char algfile[8]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-
-    int pieceValue(char p) const;
-
-    double entropy(int rank, int file);
-};
+#include "cChess.h"
 
 class cGUI : public cStarterGUI
 {
@@ -126,8 +75,16 @@ void cChess::readFEN(const std::string &fname)
 
         std::cout << line << "\n";
     }
-    getline(iss, line);
-    std::cout << line.substr(0, line.find(' ')) << "\n";
+    // getline(iss, line);
+    // std::cout << line.substr(0, line.find(' ')) << "\n";
+}
+
+std::string cChess::text()
+{
+    std::string ret;
+    for( int r=0; r< 8; r++)
+        ret += std::to_string(r) + " "+ rank(r) + "\n";
+    return ret;
 }
 std::string cChess::rank(int r)
 {
@@ -136,28 +93,26 @@ std::string cChess::rank(int r)
     ret.push_back(' ');
     for (int file = 0; file < 8; file++)
     {
-        ret.append(1, myBoard.cell(file, r)->text());
+        ret.push_back(myBoard.cell(file, r)->text());
+        ret.push_back(' ');
     }
     ret.push_back(' ');
     ret.push_back(algrank[r]);
     return ret;
 }
-double cChess::entropy(int rank, int file)
-{
-    return pieceValue(myBoard.cell(file, rank)->text());
-}
-std::string cChess::describe(int rank, int file)
+
+std::string cChess::describe(int file, int rank)
 {
     std::stringstream ret;
     char Piece = myBoard.cell(file, rank)->text();
     if (Piece == ' ')
         return ret.str();
-    ret<<algfile[file];
-    ret<<algrank[rank];
-    ret<<' ';
-    ret<<Piece;
+    ret << algfile[file];
+    ret << algrank[rank];
+    ret << ' ';
+    ret << Piece;
     ret << " ";
-    ret<< std::setprecision(4) << entropy(rank, file);
+    ret << std::setprecision(4) << entropy(file, rank);
     return ret.str();
 }
 
@@ -191,6 +146,8 @@ cGUI::cGUI()
       plBoard(wex::maker::make<wex::panel>(fm)),
       plDescribe(wex::maker::make<wex::panel>(fm))
 {
+    myChess.readFEN("start.fen");
+
     wex::menubar mbar(fm);
     wex::menu mfile(fm);
     mfile.append(
@@ -204,6 +161,9 @@ cGUI::cGUI()
             myChess.readFEN(fname);
             fm.text("Chess position " + fname);
             fm.update();
+
+            for( auto q : myChess.moves( 0,4) )
+                std::cout << myChess.algebraic(q) << " ";
         });
     mbar.append("File", mfile);
 
@@ -214,7 +174,7 @@ cGUI::cGUI()
         {
             wex::shapes S(ps);
             S.textFontName("courier");
-            S.text("  abcdefgh",
+            S.text("  a b c d e f g h",
                    {0, 0});
             for (int rank = 0; rank < 8; rank++)
             {
@@ -222,7 +182,7 @@ cGUI::cGUI()
                     myChess.rank(rank),
                     {0, (rank + 1) * 30});
             }
-            S.text("  abcdefgh",
+            S.text("  a b c d e f g h",
                    {0, 270});
         });
 
@@ -231,16 +191,19 @@ cGUI::cGUI()
         [this](PAINTSTRUCT &ps)
         {
             wex::shapes S(ps);
+            S.textFontName("courier");
             int row = 0;
             int col = 0;
-            for (int rank = 0; rank < 8; rank++) {
-                if( rank == 4 ) {
+            for (int rank = 0; rank < 8; rank++)
+            {
+                if (rank == 4)
+                {
                     col = 100;
                     row = 0;
                 }
                 for (int file = 0; file < 8; file++)
                 {
-                    auto desc = myChess.describe(rank, file);
+                    auto desc = myChess.describe(file, rank);
                     if (desc.size())
                         S.text(
                             desc,

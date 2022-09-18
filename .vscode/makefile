@@ -2,17 +2,11 @@
 VPATH = ./src 
 
 	# compiler include search paths
-INCS =  \
-	-I./src/ravencode \
-	-I../raven-set \
-
+INCS =  -I./src/ravencode 
 
 LIBS = \
-	-lgdiplus -lgdi32 -lcomdlg32 -lstdc++fs \
-	-L../boost/boost1_78/lib \
-		-lboost_system-mgw11-mt-x64-1_78 \
-		-lboost_program_options-mgw11-mt-x64-1_78 \
-		# -lboost_thread-mgw11-mt-x64-1_7 \
+	-lgdiplus -lgdi32 -lcomdlg32 -lstdc++fs
+
 	#-mwindows
 
 static_link_flags = -static-libstdc++ -static-libgcc -static
@@ -25,18 +19,19 @@ OPT = -g
 CCflags = -std=c++17 $(OPT) -D_mingw_
 
 # sources
-OBJ_starter = \
-	$(ODIR)/main.o 
+OBJ_chess = \
+	$(ODIR)/main.o \
+	$(ODIR)/cChess.o
 
 ### COMPILE
 
-$(ODIR)/%.o: %.cpp  
+$(ODIR)/%.o: %.cpp cChess.h
 	g++  $(CCflags) \
 	-c -o $@ $< $(INCS)
 
-starter: $(OBJ_starter)
+starter: $(OBJ_chess) 
 	g++ $(OPT) \
-	-o bin/starter.exe $^  \
+	-o bin/chess.exe $^  \
 	$(static_link_flags) $(LIBS)
 
 .PHONY: clean
