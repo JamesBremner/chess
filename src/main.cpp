@@ -1,6 +1,4 @@
 #include <string>
-#include <iomanip>
-#include <fstream>
 #include <sstream>
 #include <iostream>
 #include <vector>
@@ -16,105 +14,12 @@ public:
     cGUI();
 
 private:
-    wex::panel &plBoard;
-    wex::panel &plDescribe;
+    wex::panel &plBoard;        /// LHS display of layout
+    wex::panel &plDescribe;     /// rHS display describing occupied squares
 
     cChess myChess;
 };
 
-cChess::cChess()
-    : myBoard(cell::cAutomaton<cChessSquare>(8, 8))
-{
-}
-
-void cChess::readFEN(const std::string &fname)
-{
-    std::ifstream ifs(fname);
-    if (!ifs.is_open())
-        throw std::runtime_error(
-            "Cannot open FEN file");
-    std::string line;
-    getline(ifs, line);
-    std::istringstream iss(line);
-    for (int rank = 0; rank < 8; rank++)
-    {
-        getline(iss, line, '/');
-        int file = 0;
-        for (char c : line)
-        {
-            if (c == ' ')
-                break;
-            int count;
-            switch (c)
-            {
-            case 'p':
-            case 'P':
-            case 'r':
-            case 'R':
-            case 'n':
-            case 'N':
-            case 'b':
-            case 'B':
-            case 'q':
-            case 'Q':
-            case 'k':
-            case 'K':
-                myBoard.cell(file, rank)->text(c);
-                file++;
-                break;
-            default:
-                count = c - '0';
-                for (int k = 0; k < count; k++)
-                {
-                    myBoard.cell(file, rank)->text(' ');
-                    file++;
-                }
-                break;
-            }
-        }
-
-        std::cout << line << "\n";
-    }
-    // getline(iss, line);
-    // std::cout << line.substr(0, line.find(' ')) << "\n";
-}
-
-std::string cChess::text()
-{
-    std::string ret;
-    for( int r=0; r< 8; r++)
-        ret += std::to_string(r) + " "+ rank(r) + "\n";
-    return ret;
-}
-std::string cChess::rank(int r)
-{
-    std::string ret;
-    ret.push_back(algrank[r]);
-    ret.push_back(' ');
-    for (int file = 0; file < 8; file++)
-    {
-        ret.push_back(myBoard.cell(file, r)->text());
-        ret.push_back(' ');
-    }
-    ret.push_back(' ');
-    ret.push_back(algrank[r]);
-    return ret;
-}
-
-std::string cChess::describe(int file, int rank)
-{
-    std::stringstream ret;
-    char Piece = myBoard.cell(file, rank)->text();
-    if (Piece == ' ')
-        return ret.str();
-    ret << algfile[file];
-    ret << algrank[rank];
-    ret << ' ';
-    ret << Piece;
-    ret << " ";
-    ret << std::setprecision(4) << entropy(file, rank);
-    return ret.str();
-}
 
 cGUI::cGUI()
     : cStarterGUI(
@@ -190,11 +95,8 @@ cGUI::cGUI()
     run();
 }
 
-int cell::cCell::myLastID = 0;
-
 main()
 {
-
     cGUI theGUI;
     return 0;
 }
