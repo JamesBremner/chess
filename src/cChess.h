@@ -74,8 +74,12 @@ public:
 
     std::string algebraic(cChessSquare *q);
 
+    bool isWhiteMove() const
+    { return myWhiteMove; }
+
 private:
     cell::cAutomaton<cChessSquare> myBoard;
+    bool myWhiteMove;
 
     const char algrank[8]{'8', '7', '6', '5', '4', '3', '2', '1'};
     const char algfile[8]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};

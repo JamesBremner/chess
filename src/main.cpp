@@ -55,7 +55,14 @@ cGUI::cGUI()
         [this](PAINTSTRUCT &ps)
         {
             wex::shapes S(ps);
-            S.textFontName("courier");
+            //S.textFontName("courier");
+
+            if( myChess.isWhiteMove() )
+                S.text("White to move",
+                {10,50});
+            else
+                S.text("Black to move",
+                {10,50});
             S.text( myChess.describe( mySquare ),
             {10,100} );
             // int row = 0;

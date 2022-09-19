@@ -55,10 +55,15 @@ void cChess::readFEN(const std::string &fname)
             }
         }
 
-        std::cout << line << "\n";
+        //std::cout << line << "\n";
+
+        if( rank == 7) {
+            std::cout << "extra " << line.substr(line.find(' ')) << "\n";
+            myWhiteMove = false;
+            if(line[line.find(' ')+1] == 'w')
+                myWhiteMove = true;
+        }
     }
-    // getline(iss, line);
-    // std::cout << line.substr(0, line.find(' ')) << "\n";
 }
 
 std::string cChess::text()
