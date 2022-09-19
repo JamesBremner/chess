@@ -9,6 +9,35 @@ std::string cChess::algebraic(cChessSquare *q)
     s.push_back(algrank[h]);
     return s;
 }
+int cChess::pieceValue( sq_t sq ) 
+{
+    return pieceValue(
+        myBoard.cell(
+            sq.file, sq.rank)->text());
+}
+int cChess::pieceValue(char p) const
+{
+    switch (p)
+    {
+    case 'p':
+    case 'P':
+        return 1;
+    case 'n':
+    case 'N':
+    case 'b':
+    case 'B':
+        return 3;
+    case 'r':
+    case 'R':
+        return 5;
+    case 'q':
+    case 'Q':
+        return 9;
+    default:
+        return 0;
+    }
+}
+
 
 bool cChess::isEmpty(sq_t sq)
 {
@@ -178,17 +207,16 @@ std::vector<cChessSquare *> cChess::kingMoves(sq_t start)
     return ret;
 }
 
-std::vector<cChessSquare *> cChess::moves(int file, int rank)
+std::vector<cChessSquare *> cChess::moves(sq_t start)
 {
     std::vector<cChessSquare *> ret;
-    cChessSquare start(file, rank);
 
-    switch (myBoard.cell(file, rank)->text())
+    switch (myBoard.cell(start.file, start.rank)->text())
     {
     case ' ':
     default:
         break;
-    case 'p':
+    case 'p': case 'P':
         ret = pawnMoves(start);
         break;
     case 'r':
@@ -220,5 +248,6 @@ double cChess::entropy(int file, int rank)
     // this is a stub, waiting for the entropy specification
     // meantime, return the piece value times the number of legal moves available
 
-    return pieceValue(myBoard.cell(file, rank)->text()) * moves(file, rank).size();
+    cChessSquare sq(file,rank);
+    return pieceValue(sq) * moves(sq).size();
 }

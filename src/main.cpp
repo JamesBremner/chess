@@ -116,29 +116,6 @@ std::string cChess::describe(int file, int rank)
     return ret.str();
 }
 
-int cChess::pieceValue(char p) const
-{
-    switch (p)
-    {
-    case 'p':
-    case 'P':
-        return 1;
-    case 'n':
-    case 'N':
-    case 'b':
-    case 'B':
-        return 3;
-    case 'r':
-    case 'R':
-        return 5;
-    case 'q':
-    case 'Q':
-        return 9;
-    default:
-        return 0;
-    }
-}
-
 cGUI::cGUI()
     : cStarterGUI(
           "Chess",
@@ -161,9 +138,6 @@ cGUI::cGUI()
             myChess.readFEN(fname);
             fm.text("Chess position " + fname);
             fm.update();
-
-            for( auto q : myChess.moves( 0,4) )
-                std::cout << myChess.algebraic(q) << " ";
         });
     mbar.append("File", mfile);
 

@@ -56,11 +56,10 @@ public:
     std::string describe(int file, int rank);
 
     /// @brief legal moves available from a square
-    /// @param file 
-    /// @param rank 
+    /// @param moves square 
     /// @return vector of pointers to square where piece can move to
 
-    std::vector<cChessSquare *> moves(int file, int rank);
+    std::vector<cChessSquare *> moves(sq_t start);
 
     /// @brief algeabraic name of square e.g. e4
     /// @param q pointer to square
@@ -73,6 +72,16 @@ private:
 
     const char algrank[8]{'8', '7', '6', '5', '4', '3', '2', '1'};
     const char algfile[8]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+
+    /// @brief the standard piece value P is 1, ... Q is 9
+    /// @param sq square containing piece   
+    /// @return value of piece
+
+    int pieceValue( sq_t sq );
+
+    /// @brief the standard piece value P is 1, ... Q is 9
+    /// @param p symbol of piece
+    /// @return value of piece
 
     int pieceValue(char p) const;
 
@@ -95,7 +104,7 @@ private:
     /// @param start starting square
     /// @param fileInc file increment
     /// @param rankInc rank increment
-    
+
     void longMoves(
         std::vector<cChessSquare *>& ret,
         sq_t start,
