@@ -67,17 +67,17 @@ public:
 
     std::string algebraic(cChessSquare *q);
 
-private:
-    cell::cAutomaton<cChessSquare> myBoard;
-
-    const char algrank[8]{'8', '7', '6', '5', '4', '3', '2', '1'};
-    const char algfile[8]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-
     /// @brief symbol of piece occupying the square
     /// @param sq square
     /// @return symbol
     
     char piece( sq_t sq );
+
+private:
+    cell::cAutomaton<cChessSquare> myBoard;
+
+    const char algrank[8]{'8', '7', '6', '5', '4', '3', '2', '1'};
+    const char algfile[8]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 
     /// @brief the standard piece value P is 1, ... Q is 9
     /// @param sq square containing piece   

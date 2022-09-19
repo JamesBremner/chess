@@ -111,8 +111,14 @@ std::string cChess::algebraic(cChessSquare *q)
 
 char cChess::piece( sq_t sq )
 {
+    try {
     return myBoard.cell(
             sq.file, sq.rank)->text();
+    }
+    catch( ... )
+    {
+        return 'x';
+    }
 }
 int cChess::pieceValue( sq_t sq ) 
 {

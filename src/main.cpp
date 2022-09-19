@@ -14,12 +14,14 @@ public:
     cGUI();
 
 private:
-    wex::panel &plBoard;        /// LHS display of layout
-    wex::panel &plDescribe;     /// rHS display describing occupied squares
+    wex::panel &plBoard;    /// LHS display of layout
+    wex::panel &plDescribe; /// rHS display describing occupied squares
 
     cChess myChess;
-};
+    cChessSquare mySquare;
 
+    void boardConst();
+};
 
 cGUI::cGUI()
     : cStarterGUI(
@@ -46,24 +48,7 @@ cGUI::cGUI()
         });
     mbar.append("File", mfile);
 
-    plBoard.move(20, 20, 300, 400);
-    plBoard.fontName("courier");
-    plBoard.events().draw(
-        [this](PAINTSTRUCT &ps)
-        {
-            wex::shapes S(ps);
-            S.textFontName("courier");
-            S.text("  a b c d e f g h",
-                   {0, 0});
-            for (int rank = 0; rank < 8; rank++)
-            {
-                S.text(
-                    myChess.rank(rank),
-                    {0, (rank + 1) * 30});
-            }
-            S.text("  a b c d e f g h",
-                   {0, 270});
-        });
+    boardConst();
 
     plDescribe.move(400, 20, 300, 700);
     plDescribe.events().draw(
@@ -95,6 +80,59 @@ cGUI::cGUI()
     run();
 }
 
+void cGUI::boardConst()
+{
+    plBoard.move(20, 20, 300, 400);
+    plBoard.fontName("courier");
+    plBoard.events().draw(
+        [this](PAINTSTRUCT &ps)
+        {
+            wex::shapes S(ps);
+            S.textFontName("courier");
+            S.text("  a b c d e f g h",
+                   {0, 0});
+            for (int rank = 0; rank < 8; rank++)
+            {
+                S.text(
+                    myChess.rank(rank),
+                    {0, (rank + 1) * 30});
+            }
+            S.text("  a b c d e f g h",
+                   {0, 270});
+
+            char piece = myChess.piece(mySquare);
+            if (piece != 'x'  && piece != ' ')
+            {
+                int x = 35 + mySquare.file * 23;
+                int y = 40 + mySquare.rank * 30;
+                S.circle(
+                    x,y,15);
+                S.text(
+                    std::string(1, piece),
+                    {x - 8,
+                     y - 10});
+            }
+        });
+    plBoard.events().mouseMove(
+        [this](wex::sMouse &m)
+        {
+            const int xstart = 22;
+            const int xinc = 22;
+            const int ystart = 30;
+            const int yinc = 30;
+
+            int file = (m.x - xstart) / xinc;
+            int rank = (m.y - ystart) / yinc;
+            // std::cout
+            //     << " mouse move "
+            //     << m.x << " " << m.y << " ";
+            // std::cout << file << " " << rank
+            //           << " " << myChess.piece(cChessSquare(file, rank)) << "\n";
+            mySquare.file = file;
+            mySquare.rank = rank;
+            plBoard.update();
+        });
+}
 main()
 {
     cGUI theGUI;
