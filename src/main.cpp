@@ -50,30 +50,32 @@ cGUI::cGUI()
 
     boardConst();
 
-    plDescribe.move(400, 20, 300, 700);
+    plDescribe.move(400, 20, 400, 700);
     plDescribe.events().draw(
         [this](PAINTSTRUCT &ps)
         {
             wex::shapes S(ps);
             S.textFontName("courier");
-            int row = 0;
-            int col = 0;
-            for (int rank = 0; rank < 8; rank++)
-            {
-                if (rank == 4)
-                {
-                    col = 100;
-                    row = 0;
-                }
-                for (int file = 0; file < 8; file++)
-                {
-                    auto desc = myChess.describe(file, rank);
-                    if (desc.size())
-                        S.text(
-                            desc,
-                            {col, 20 * row++});
-                }
-            }
+            S.text( myChess.describe( mySquare ),
+            {10,100} );
+            // int row = 0;
+            // int col = 0;
+            // for (int rank = 0; rank < 8; rank++)
+            // {
+            //     if (rank == 4)
+            //     {
+            //         col = 100;
+            //         row = 0;
+            //     }
+            //     for (int file = 0; file < 8; file++)
+            //     {
+            //         auto desc = myChess.describe(file, rank);
+            //         if (desc.size())
+            //             S.text(
+            //                 desc,
+            //                 {col, 20 * row++});
+            //     }
+            // }
         });
 
     show();
@@ -131,6 +133,7 @@ void cGUI::boardConst()
             mySquare.file = file;
             mySquare.rank = rank;
             plBoard.update();
+            plDescribe.update();
         });
 }
 main()

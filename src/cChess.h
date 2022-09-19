@@ -53,7 +53,7 @@ public:
     /// @param file
     /// @return human readable description
 
-    std::string describe(int file, int rank);
+    std::string describe(sq_t sq );
 
     /// @brief legal moves available from a square
     /// @param moves square 
@@ -61,17 +61,18 @@ public:
 
     std::vector<cChessSquare *> moves(sq_t start);
 
-    /// @brief algeabraic name of square e.g. e4
-    /// @param q pointer to square
-    /// @return name
-
-    std::string algebraic(cChessSquare *q);
-
     /// @brief symbol of piece occupying the square
     /// @param sq square
     /// @return symbol
     
     char piece( sq_t sq );
+    std::string pieceVerbose(sq_t sq);
+
+    /// @brief algeabraic name of square e.g. e4
+    /// @param q pointer to square
+    /// @return name
+
+    std::string algebraic(cChessSquare *q);
 
 private:
     cell::cAutomaton<cChessSquare> myBoard;
@@ -91,7 +92,7 @@ private:
 
     int pieceValue(char p) const;
 
-    double entropy(int rank, int file);
+    double strength(sq_t);
 
     /// @brief true if square can be moved to
     bool isEmpty(sq_t sq);

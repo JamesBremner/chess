@@ -64,8 +64,8 @@ void cChess::readFEN(const std::string &fname)
 std::string cChess::text()
 {
     std::string ret;
-    for( int r=0; r< 8; r++)
-        ret += std::to_string(r) + " "+ rank(r) + "\n";
+    for (int r = 0; r < 8; r++)
+        ret += std::to_string(r) + " " + rank(r) + "\n";
     return ret;
 }
 std::string cChess::rank(int r)
@@ -83,21 +83,19 @@ std::string cChess::rank(int r)
     return ret;
 }
 
-std::string cChess::describe(int file, int rank)
+std::string cChess::describe(sq_t sq)
 {
     std::stringstream ret;
-    char Piece = myBoard.cell(file, rank)->text();
-    if (Piece == ' ')
+    char Piece = piece(sq);
+    if (Piece == ' ' || Piece == 'x')
         return ret.str();
-    ret << algfile[file];
-    ret << algrank[rank];
-    ret << ' ';
-    ret << Piece;
-    ret << " ";
-    ret << std::setprecision(4) << entropy(file, rank);
+    ret << algfile[sq.file];
+    ret << algrank[sq.rank];
+    ret << " "<<pieceVerbose( sq );
+    ret << " strength ";
+    ret << std::setprecision(4) << strength(sq);
     return ret.str();
 }
-
 
 std::string cChess::algebraic(cChessSquare *q)
 {
@@ -109,20 +107,52 @@ std::string cChess::algebraic(cChessSquare *q)
     return s;
 }
 
-char cChess::piece( sq_t sq )
+char cChess::piece(sq_t sq)
 {
-    try {
-    return myBoard.cell(
-            sq.file, sq.rank)->text();
+    try
+    {
+        return myBoard.cell(
+                          sq.file, sq.rank)
+            ->text();
     }
-    catch( ... )
+    catch (...)
     {
         return 'x';
     }
 }
-int cChess::pieceValue( sq_t sq ) 
+std::string cChess::pieceVerbose(sq_t sq)
 {
-    return pieceValue(piece( sq ));
+    std::string ret;
+    if (isWhite(sq))
+        ret += "White ";
+    else
+        ret += "Black ";
+    switch (piece(sq))
+    {
+        case 'p':case 'P':
+            ret += "pawn";
+            break;
+        case 'r':case 'R':
+            ret += "rook";
+            break;
+        case 'n':case 'N':
+            ret += "knight";
+            break;
+        case 'b':case 'B':
+            ret += "bishop";
+            break;
+        case 'q':case 'Q':
+            ret += "queen";
+            break;
+        case 'k':case 'K':
+            ret += "king";
+            break;
+    }
+    return ret;
+}
+int cChess::pieceValue(sq_t sq)
+{
+    return pieceValue(piece(sq));
 }
 int cChess::pieceValue(char p) const
 {
@@ -146,7 +176,6 @@ int cChess::pieceValue(char p) const
         return 0;
     }
 }
-
 
 bool cChess::isEmpty(sq_t sq)
 {
@@ -325,7 +354,8 @@ std::vector<cChessSquare *> cChess::moves(sq_t start)
     case ' ':
     default:
         break;
-    case 'p': case 'P':
+    case 'p':
+    case 'P':
         ret = pawnMoves(start);
         break;
     case 'r':
@@ -352,11 +382,9 @@ std::vector<cChessSquare *> cChess::moves(sq_t start)
     return ret;
 }
 
-double cChess::entropy(int file, int rank)
+double cChess::strength(sq_t sq)
 {
-    // this is a stub, waiting for the entropy specification
-    // meantime, return the piece value times the number of legal moves available
+    // return the piece value times the number of legal moves available
 
-    cChessSquare sq(file,rank);
     return pieceValue(sq) * moves(sq).size();
 }
