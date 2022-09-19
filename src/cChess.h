@@ -89,4 +89,16 @@ private:
     std::vector<cChessSquare *> queenMoves(sq_t start);
     std::vector<cChessSquare *> pawnMoves(sq_t start);
     std::vector<cChessSquare *> kingMoves(sq_t start);
+
+    /// @brief long moves ( rook, bishop, queen )
+    /// @param ret  vector of pointers to reachable squares, added to
+    /// @param start starting square
+    /// @param fileInc file increment
+    /// @param rankInc rank increment
+    
+    void longMoves(
+        std::vector<cChessSquare *>& ret,
+        sq_t start,
+        int fileInc,
+        int rankInc    );
 };

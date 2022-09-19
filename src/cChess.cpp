@@ -61,6 +61,29 @@ bool cChess::isCapture(
     }
 }
 
+void cChess::longMoves(
+    std::vector<cChessSquare *> &ret,
+    sq_t start,
+    int fileInc,
+    int rankInc)
+{
+    cChessSquare dst(
+        start.file + fileInc,
+        start.rank + rankInc);
+    while (true)
+    {
+        if (!isEmpty(dst))
+        {
+            if (isCapture(start, dst))
+                ret.push_back(myBoard.cell(dst.file, dst.rank));
+            break; // blocked from going further
+        }
+        ret.push_back(myBoard.cell(dst.file, dst.rank));
+        dst.rank += rankInc;
+        dst.file += fileInc;
+    }
+}
+
 std::vector<cChessSquare *> cChess::rookMoves(sq_t start)
 {
     std::vector<cChessSquare *> ret;
@@ -68,24 +91,11 @@ std::vector<cChessSquare *> cChess::rookMoves(sq_t start)
     const int fi[4] = {1, -1, 0, 0};
     for (int d = 0; d < 4; d++)
     {
-        int rankinc = ri[d];
-        int fileinc = fi[d];
-        cChessSquare dst(
-            start.file + fileinc,
-            start.rank + rankinc);
-
-        while (true)
-        {
-            if (!isEmpty(dst))
-            {
-                if (isCapture(start, dst))
-                    ret.push_back(myBoard.cell(dst.file, dst.rank));
-                break; // blocked from going further
-            }
-            ret.push_back(myBoard.cell(dst.file, dst.rank));
-            dst.rank += rankinc;
-            dst.file += fileinc;
-        }
+        longMoves(
+            ret,
+            start,
+            fi[d],
+            ri[d]);
     }
     return ret;
 }
@@ -114,23 +124,11 @@ std::vector<cChessSquare *> cChess::bishopMoves(sq_t start)
     const int fi[4] = {1, -1, 1, -1};
     for (int d = 0; d < 4; d++)
     {
-        int rankinc = ri[d];
-        int fileinc = fi[d];
-        cChessSquare dst(
-            start.file + fileinc,
-            start.rank + rankinc);
-        while (true)
-        {
-            if (!isEmpty(dst))
-            {
-                if (isCapture(start, dst))
-                    ret.push_back(myBoard.cell(dst.file, dst.rank));
-                break; // blocked from going further
-            }
-            ret.push_back(myBoard.cell(dst.file, dst.rank));
-            dst.rank += rankinc;
-            dst.file += fileinc;
-        }
+        longMoves(
+            ret,
+            start,
+            fi[d],
+            ri[d]);
     }
     return ret;
 }
@@ -167,14 +165,14 @@ std::vector<cChessSquare *> cChess::pawnMoves(sq_t start)
 std::vector<cChessSquare *> cChess::kingMoves(sq_t start)
 {
     std::vector<cChessSquare *> ret;
-        int w, h;
+    int w, h;
     for (cChessSquare *c : myBoard.neighbours(start.file, start.rank))
     {
         myBoard.coords(w, h, c);
         cChessSquare dst(w, h);
         if (isEmpty(dst))
             ret.push_back(c);
-        else if( isCapture(start,dst))
+        else if (isCapture(start, dst))
             ret.push_back(c);
     }
     return ret;
