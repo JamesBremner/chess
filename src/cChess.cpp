@@ -55,12 +55,13 @@ void cChess::readFEN(const std::string &fname)
             }
         }
 
-        //std::cout << line << "\n";
+        // std::cout << line << "\n";
 
-        if( rank == 7) {
+        if (rank == 7)
+        {
             std::cout << "extra " << line.substr(line.find(' ')) << "\n";
             myWhiteMove = false;
-            if(line[line.find(' ')+1] == 'w')
+            if (line[line.find(' ') + 1] == 'w')
                 myWhiteMove = true;
         }
     }
@@ -96,7 +97,7 @@ std::string cChess::describe(sq_t sq)
         return ret.str();
     ret << algfile[sq.file];
     ret << algrank[sq.rank];
-    ret << " "<<pieceVerbose( sq );
+    ret << " " << pieceVerbose(sq);
     ret << " strength ";
     ret << std::setprecision(4) << strength(sq);
     return ret.str();
@@ -110,6 +111,30 @@ std::string cChess::algebraic(cChessSquare *q)
     s.push_back(algfile[w]);
     s.push_back(algrank[h]);
     return s;
+}
+
+bool cChess::move(sq_t Square, sq_t SquareMove)
+{
+    // check that move is legal
+    bool fOK = false;
+    for (auto legal : moves(Square))
+    {
+        if (legal->file == SquareMove.file &&
+            legal->rank == SquareMove.rank)
+        {
+            fOK = true;
+            break;
+        }
+    }
+    if (!fOK)
+        return false;
+
+    // move the piece
+    char p = piece( Square );
+    myBoard.cell( Square.file, Square.rank )->text(' ');
+    myBoard.cell( SquareMove.file, SquareMove.rank )->text(p);
+
+    return true;
 }
 
 char cChess::piece(sq_t sq)
@@ -134,24 +159,30 @@ std::string cChess::pieceVerbose(sq_t sq)
         ret += "Black ";
     switch (piece(sq))
     {
-        case 'p':case 'P':
-            ret += "pawn";
-            break;
-        case 'r':case 'R':
-            ret += "rook";
-            break;
-        case 'n':case 'N':
-            ret += "knight";
-            break;
-        case 'b':case 'B':
-            ret += "bishop";
-            break;
-        case 'q':case 'Q':
-            ret += "queen";
-            break;
-        case 'k':case 'K':
-            ret += "king";
-            break;
+    case 'p':
+    case 'P':
+        ret += "pawn";
+        break;
+    case 'r':
+    case 'R':
+        ret += "rook";
+        break;
+    case 'n':
+    case 'N':
+        ret += "knight";
+        break;
+    case 'b':
+    case 'B':
+        ret += "bishop";
+        break;
+    case 'q':
+    case 'Q':
+        ret += "queen";
+        break;
+    case 'k':
+    case 'K':
+        ret += "king";
+        break;
     }
     return ret;
 }
@@ -384,6 +415,13 @@ std::vector<cChessSquare *> cChess::moves(sq_t start)
         ret = kingMoves(start);
         break;
     }
+
+    // fill in file and rank of legal cells
+    for( auto psq : ret )
+    {
+        myBoard.coords( psq->file, psq->rank, psq );
+    }
+
     return ret;
 }
 

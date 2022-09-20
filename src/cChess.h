@@ -6,11 +6,12 @@ class cChessSquare : public cell::cCell
 public:
     int file, rank;
     cChessSquare()
-    {}
-    cChessSquare( int f, int r )
-    : file( f )
-    , rank(r)
-    {}
+    {
+    }
+    cChessSquare(int f, int r)
+        : file(f), rank(r)
+    {
+    }
     void text(char c)
     {
         myText = c;
@@ -24,7 +25,7 @@ private:
     char myText;
 };
 
-typedef const cChessSquare & sq_t;
+typedef const cChessSquare &sq_t;
 
 class cChess
 {
@@ -39,7 +40,7 @@ public:
     void readFEN(const std::string &fname);
 
     /// @brief human readable  position layout
-    /// @return 
+    /// @return
     std::string text();
 
     /// @brief human readable rank position
@@ -53,10 +54,10 @@ public:
     /// @param file
     /// @return human readable description
 
-    std::string describe(sq_t sq );
+    std::string describe(sq_t sq);
 
     /// @brief legal moves available from a square
-    /// @param moves square 
+    /// @param moves square
     /// @return vector of pointers to square where piece can move to
 
     std::vector<cChessSquare *> moves(sq_t start);
@@ -64,8 +65,8 @@ public:
     /// @brief symbol of piece occupying the square
     /// @param sq square
     /// @return symbol
-    
-    char piece( sq_t sq );
+
+    char piece(sq_t sq);
     std::string pieceVerbose(sq_t sq);
 
     /// @brief algeabraic name of square e.g. e4
@@ -75,7 +76,16 @@ public:
     std::string algebraic(cChessSquare *q);
 
     bool isWhiteMove() const
-    { return myWhiteMove; }
+    {
+        return myWhiteMove;
+    }
+
+    /// @brief Move a piece on the board
+    /// @param from source square
+    /// @param to destination square
+    /// @return true if successful, false if move is illegal
+    
+    bool move( sq_t from, sq_t to );
 
 private:
     cell::cAutomaton<cChessSquare> myBoard;
@@ -85,10 +95,10 @@ private:
     const char algfile[8]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 
     /// @brief the standard piece value P is 1, ... Q is 9
-    /// @param sq square containing piece   
+    /// @param sq square containing piece
     /// @return value of piece
 
-    int pieceValue( sq_t sq );
+    int pieceValue(sq_t sq);
 
     /// @brief the standard piece value P is 1, ... Q is 9
     /// @param p symbol of piece
@@ -101,7 +111,7 @@ private:
     /// @brief true if square can be moved to
     bool isEmpty(sq_t sq);
     bool isWhite(sq_t sq);
-    bool isCapture( sq_t src, sq_t trg );
+    bool isCapture(sq_t src, sq_t trg);
 
     std::vector<cChessSquare *> rookMoves(sq_t start);
     std::vector<cChessSquare *> knightMoves(sq_t start);
@@ -117,8 +127,8 @@ private:
     /// @param rankInc rank increment
 
     void longMoves(
-        std::vector<cChessSquare *>& ret,
+        std::vector<cChessSquare *> &ret,
         sq_t start,
         int fileInc,
-        int rankInc    );
+        int rankInc);
 };

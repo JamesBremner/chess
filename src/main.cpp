@@ -17,8 +17,14 @@ private:
     wex::panel &plBoard;    /// LHS display of layout
     wex::panel &plDescribe; /// rHS display describing occupied squares
 
+    const int myboardxstart = 22;
+    const int myboardxinc = 22;
+    const int myboardystart = 30;
+    const int myboardyinc = 30;
+
     cChess myChess;
     cChessSquare mySquare;
+    cChessSquare mySquareMove;
 
     void boardConst();
 };
@@ -55,16 +61,16 @@ cGUI::cGUI()
         [this](PAINTSTRUCT &ps)
         {
             wex::shapes S(ps);
-            //S.textFontName("courier");
+            // S.textFontName("courier");
 
-            if( myChess.isWhiteMove() )
+            if (myChess.isWhiteMove())
                 S.text("White to move",
-                {10,50});
+                       {10, 50});
             else
                 S.text("Black to move",
-                {10,50});
-            S.text( myChess.describe( mySquare ),
-            {10,100} );
+                       {10, 50});
+            S.text(myChess.describe(mySquare),
+                   {10, 100});
             // int row = 0;
             // int col = 0;
             // for (int rank = 0; rank < 8; rank++)
@@ -110,12 +116,12 @@ void cGUI::boardConst()
                    {0, 270});
 
             char piece = myChess.piece(mySquare);
-            if (piece != 'x'  && piece != ' ')
+            if (piece != 'x' && piece != ' ')
             {
                 int x = 35 + mySquare.file * 23;
                 int y = 40 + mySquare.rank * 30;
                 S.circle(
-                    x,y,15);
+                    x, y, 15);
                 S.text(
                     std::string(1, piece),
                     {x - 8,
@@ -125,13 +131,11 @@ void cGUI::boardConst()
     plBoard.events().mouseMove(
         [this](wex::sMouse &m)
         {
-            const int xstart = 22;
-            const int xinc = 22;
-            const int ystart = 30;
-            const int yinc = 30;
+            if (m.left)
+                return;
 
-            int file = (m.x - xstart) / xinc;
-            int rank = (m.y - ystart) / yinc;
+            int file = (m.x - myboardxstart) / myboardxinc;
+            int rank = (m.y - myboardystart) / myboardyinc;
             // std::cout
             //     << " mouse move "
             //     << m.x << " " << m.y << " ";
@@ -141,6 +145,21 @@ void cGUI::boardConst()
             mySquare.rank = rank;
             plBoard.update();
             plDescribe.update();
+        });
+    plBoard.events().mouseUp(
+        [this]
+        {
+            auto m = plBoard.getMouseStatus();
+            mySquareMove.file = (m.x - myboardxstart) / myboardxinc;
+            mySquareMove.rank = (m.y - myboardystart) / myboardyinc;
+
+            if( ! myChess.move( mySquare, mySquareMove ) )
+                return;
+                
+            mySquare = mySquareMove;
+            plBoard.update();
+            plDescribe.update();
+            
         });
 }
 main()
