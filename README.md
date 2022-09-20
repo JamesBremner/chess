@@ -12,4 +12,6 @@ e4.fen
 
 On the right, the occupied squares are shown, with the piece on the square and a measure of strength equal to the product of the value of the piece and the number of moves available to it.
 
+The user can move a piece on the boar. Click on the piece and, holding down the left mouse button, drag it to a new square and release the button.  If the move is legal, the board will be updated with the new position,
+
 
